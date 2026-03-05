@@ -1,7 +1,20 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { TextureLoader } from "three";
+import GUI from "lil-gui";
+
+const AmbientLightController = ({ onLightRef }) => {
+  const lightRef = useRef();
+
+  useEffect(() => {
+    if (lightRef.current) {
+      onLightRef(lightRef.current);
+    }
+  }, [onLightRef]);
+
+  return <ambientLight ref={lightRef} intensity={1.0} />;
+};
 
 const MovingCube = () => {
   const cubeRef = useRef();
@@ -42,9 +55,22 @@ const MovingCube = () => {
 };
 
 const Texturas = () => {
+  const ambientLightRef = useRef(null);
+
+  useEffect(() => {
+    if (ambientLightRef.current) {
+      const gui = new GUI();
+      gui.add(ambientLightRef.current, 'intensity').min(0).max(3).step(0.001);
+    }
+  }, []);
+
+  const handleAmbientLightRef = (light) => {
+    ambientLightRef.current = light;
+  };
+
   return (
     <Canvas camera={{ position: [0, 0, 10] }}>
-      <ambientLight intensity={3.0} />
+      <AmbientLightController onLightRef={handleAmbientLightRef} />
       <directionalLight position={[10, 10, 10]} intensity={1} />
       <MovingCube />
       <OrbitControls />

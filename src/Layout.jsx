@@ -25,6 +25,9 @@ function Layout() {
                   <Dropdown.Item href="/ejercicio3">Plano y Figuras</Dropdown.Item>
                   <Dropdown.Item href="/ejercicio4">Agrupacion de Objetos - React</Dropdown.Item>
                   <Dropdown.Item href="/ejercicio5">Agrupacion de Objetos - Three.js</Dropdown.Item>
+                  <Dropdown.Item href="/luces">Luces</Dropdown.Item>
+                  <Dropdown.Item href="/three-sin-luces">Three.js Sin Luces</Dropdown.Item>
+
                </Dropdown.Menu>
               </Dropdown>
             
@@ -33,7 +36,12 @@ function Layout() {
                   Laboratorio
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item href="">Ubicar practicas aquí</Dropdown.Item>
+                  <Dropdown.Item href="/ejercicio1lab1">Ejercicio 1</Dropdown.Item>
+                  <Dropdown.Item href="/ejercicio2lab1">Ejercicio 2 - Living Room</Dropdown.Item>
+                  <Dropdown.Item href="/ejercicio3lab1">Ejercicio 3</Dropdown.Item>
+                  <Dropdown.Item href="/ejercicio4lab1">Ejercicio 4</Dropdown.Item>
+                  <Dropdown.Item href="/ejercicio5lab1">Ejercicio 5 - HDRI</Dropdown.Item>
+                  <Dropdown.Item href="/laboratorio">Laboratorio</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </Nav>
