@@ -42,6 +42,8 @@ function Layout() {
                   <Dropdown.Item href="/ejercicio4lab1">Ejercicio 4</Dropdown.Item>
                   <Dropdown.Item href="/ejercicio5lab1">Ejercicio 5 - HDRI</Dropdown.Item>
                   <Dropdown.Item href="/laboratorio">Laboratorio</Dropdown.Item>
+                  <Dropdown.Divider />
+                  <Dropdown.Item href="/fisicas">Física</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </Nav>

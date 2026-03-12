@@ -1,83 +1,134 @@
-import React, { useEffect, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import { useLoader } from "@react-three/fiber"
-import { TextureLoader } from "three"
+import { useMemo, useRef } from "react"
+import { useFrame } from "@react-three/fiber"
+import { AdditiveBlending } from "three"
 
+export default function Lab2({ count = 5000 }) {
 
-const Lab2 = ({ size = 0.1, color = "#ff88cc" }) => {
-  const particlesRef = useRef(null);
-  const pointsRef = useRef(null);
-  
-  // Dentro de la funcion Particles
-  const texture = useLoader(
-    TextureLoader,
-    "/textures/2.png"
-  );
+  const materialRef = useRef()
 
-  useEffect(() => {
-    // Crear geometría de partículas
-    const particlesCount = 2000;
-    const positionArray = new Float32Array(particlesCount * 3);
+  const positions = useMemo(() => {
+    const array = new Float32Array(count * 3)
 
-    for (let i = 0; i < particlesCount * 3; i += 3) {
-      positionArray[i] = (Math.random() - 0.5) * 10; // x
-      positionArray[i + 1] = (Math.random() - 0.5) * 10; // y
-      positionArray[i + 2] = (Math.random() - 0.5) * 10; // z
+    for (let i = 0; i < count * 3; i++) {
+      array[i] = (Math.random() - 0.5) * 4
     }
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(positionArray, 3));
+    return array
+  }, [count])
 
-    // Crear material
-    const material = new THREE.PointsMaterial({
-      size: size,
-      color: color,
-      sizeAttenuation: true,
-      transparent: true,
-      opacity: 0.8,
-      map: texture,
-    });
+  const sizes = useMemo(() => {
+    const array = new Float32Array(count)
 
-    // Crear puntos
-    const points = new THREE.Points(geometry, material);
-    pointsRef.current = points;
-
-    if (particlesRef.current) {
-      particlesRef.current.add(points);
+    for (let i = 0; i < count; i++) {
+      array[i] = Math.random()
     }
 
-    return () => {
-      geometry.dispose();
-      material.dispose();
-      if (particlesRef.current) {
-        particlesRef.current.remove(points);
-      }
-    };
-  }, []);
+    return array
+  }, [count])
 
-  useFrame(() => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.x += 0.0003;
-      pointsRef.current.rotation.y += 0.0005;
+  useFrame((state) => {
+    materialRef.current.uniforms.uTime.value =
+      state.clock.getElapsedTime()
+  })
 
-      // Animación de las partículas
-      const positions = pointsRef.current.geometry.attributes.position.array;
-      for (let i = 0; i < positions.length; i += 3) {
-        positions[i] += (Math.random() - 0.5) * 0.05; // x
-        positions[i + 1] += (Math.random() - 0.5) * 0.05; // y
-        positions[i + 2] += (Math.random() - 0.5) * 0.05; // z
+  return (
+    <points>
 
-        // Limitar a un rango específico
-        if (Math.abs(positions[i]) > 10) positions[i] *= -1;
-        if (Math.abs(positions[i + 1]) > 10) positions[i + 1] *= -1;
-        if (Math.abs(positions[i + 2]) > 10) positions[i + 2] *= -1;
-      }
-      pointsRef.current.geometry.attributes.position.needsUpdate = true;
-    }
-  });
+      <bufferGeometry>
 
-  return <group ref={particlesRef} />;
-};
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
 
-export default Lab2;
+        <bufferAttribute
+          attach="attributes-size"
+          count={count}
+          array={sizes}
+          itemSize={1}
+        />
+
+      </bufferGeometry>
+
+      <shaderMaterial
+        ref={materialRef}
+
+        uniforms={{
+          uTime: { value: 0 },
+          uSize: { value: 40 }
+        }}
+
+        vertexShader={`
+uniform float uTime;
+uniform float uSize;
+
+attribute float size;
+
+varying float vHeight;
+
+void main(){
+
+    vec3 pos = position;
+
+    pos.y = mod(position.y + uTime * 2.0, 4.0);
+
+    float noise =
+        sin(pos.y * 5.0 + uTime * 3.0) *
+        cos(pos.x * 5.0 + uTime * 2.0);
+
+    pos.x += noise * 0.3;
+    pos.z += noise * 0.3;
+
+    vHeight = pos.y;
+
+    vec4 modelPosition =
+        modelMatrix * vec4(pos,1.0);
+
+    vec4 viewPosition =
+        viewMatrix * modelPosition;
+
+    gl_Position =
+        projectionMatrix * viewPosition;
+
+    gl_PointSize =
+        size * uSize * (1.0 / -viewPosition.z);
+}
+`}
+
+        fragmentShader={`
+varying float vHeight;
+
+void main(){
+
+    float dist =
+        distance(gl_PointCoord, vec2(0.5));
+
+    float strength =
+        1.0 - smoothstep(0.4,0.5,dist);
+
+    vec3 bottom = vec3(1.0,0.2,0.0);
+    vec3 middle = vec3(1.0,0.6,0.0);
+    vec3 top = vec3(1.0,1.0,0.5);
+
+    vec3 color =
+        mix(bottom,middle,vHeight*0.3);
+
+    color =
+        mix(color,top,vHeight*0.7);
+
+    gl_FragColor =
+        vec4(color,strength);
+}
+`}
+
+        transparent
+        depthWrite={false}
+        blending={AdditiveBlending}
+
+      />
+
+    </points>
+  )
+}

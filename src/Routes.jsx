@@ -12,6 +12,7 @@ import Ejercicio4 from "./pages/Ejercicio4";
 import Ejercicio5 from "./pages/Ejercicio5";
 import Luces from "./pages/Luces";
 import Laboratorio1 from "./pages/Laboratorio";
+import Fisicas from "./pages/Fisicas";
 import ThreeSceneSinLuces from "./components/ThreeSceneSinLuces";
 
 const routes = [
@@ -30,6 +31,7 @@ const routes = [
   { path: "ejercicio5", element: <Ejercicio5 /> },
   { path: "luces", element: <Luces /> },
   { path: "three-sin-luces", element: <ThreeSceneSinLuces /> },
+  { path: "fisicas", element: <Fisicas /> },
 ];
 
 export default routes;
