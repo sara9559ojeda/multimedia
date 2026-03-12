@@ -1,10 +1,19 @@
 import React, { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useLoader } from "@react-three/fiber"
+import { TextureLoader } from "three"
 
-const Lab2 = () => {
+
+const Lab2 = ({ size = 0.1, color = "#ff88cc" }) => {
   const particlesRef = useRef(null);
   const pointsRef = useRef(null);
+  
+  // Dentro de la funcion Particles
+  const texture = useLoader(
+    TextureLoader,
+    "/textures/2.png"
+  );
 
   useEffect(() => {
     // Crear geometría de partículas
@@ -22,11 +31,12 @@ const Lab2 = () => {
 
     // Crear material
     const material = new THREE.PointsMaterial({
-      size: 0.1,
-      color: 0x00ffff,
+      size: size,
+      color: color,
       sizeAttenuation: true,
       transparent: true,
       opacity: 0.8,
+      map: texture,
     });
 
     // Crear puntos
